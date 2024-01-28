@@ -2,7 +2,7 @@ import NewAccountCreator from '@/components/NewAccountCreator';
 import { cn } from '@/lib/utils';
 import { db } from '@/modules/db';
 import type { Metadata } from 'next';
-import { Inter as FontSans } from 'next/font/google';
+import { Poor_Story as FontSans } from 'next/font/google';
 import Link from 'next/link';
 import './globals.scss';
 
@@ -10,6 +10,7 @@ import './globals.scss';
 export const fontSans = FontSans({
   subsets: ['latin'],
   variable: '--font-sans',
+  weight: '400',
 });
 
 export const metadata: Metadata = {
@@ -26,21 +27,26 @@ export default async function RootLayout({
     orderBy: { name: 'asc' },
     select: { id: true, name: true },
   });
+  // console.log(accounts);
   return (
     <html lang='en'>
       <body
         suppressHydrationWarning
         className={cn('min-h-screen bg-background font-sans antialiased flex', fontSans.variable)}
       >
-        <div className='bg-slate-800 text-slate-100 w-[240px] flex flex-col p-2'>
+        <div className='bg-slate-800 text-slate-100 w-[240px] flex flex-col p-2 gap-2'>
           {accounts.map(account => (
-            <Link key={account.id} href={`/accounts/${account.id}`}>
-              {account.name}
+            <Link
+              className='text-start hover:bg-slate-700 p-2'
+              key={account.id}
+              href={`/accounts/${account.id}`}
+            >
+              {account.name.toUpperCase() + ' ' + account.id.slice(0, 10) + '...'}
             </Link>
           ))}
           <NewAccountCreator />
         </div>
-        {children}
+        <div className='p-4 w-full'>{children}</div>
       </body>
     </html>
   );
