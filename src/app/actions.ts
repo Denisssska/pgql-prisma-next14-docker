@@ -16,19 +16,50 @@ export const createAccount = async (rawData: FormData) => {
   const account = await db.account.create({ data: data });
   redirect(`/accounts/${account.id}`);
 };
-const createWorkSessionSchema = z.object({
+const CreateWorkSessionSchema = z.object({
   accountId: z.string(),
   startsOn: z.coerce.date().optional(),
   description: z.string().min(1).max(120).optional(),
   hours: z.coerce.number().min(0).max(24).optional(),
 });
 export const createWorkSession = async (rawData: FormData) => {
-  const data = createWorkSessionSchema.parse({
+  const data = CreateWorkSessionSchema.parse({
     accountId: rawData.get('accountId'),
     startsOn: rawData.get('startsOn'),
     description: rawData.get('description'),
     hours: rawData.get('hours'),
   });
   const workSession = await db.workSession.create({ data });
+  revalidatePath(`/accounts/${workSession.accountId}`);
+};
+const DeleteWorkSessionSchema = z.object({
+  id: z.string(),
+});
+export const deleteWorkSession = async (rawData: FormData) => {
+  const { id } = DeleteWorkSessionSchema.parse({
+    id: rawData.get('id'),
+  });
+  const session = await db.workSession.delete({ where: { id: id } });
+  revalidatePath(`/accounts/${session.accountId}`);
+};
+const UpdateWorkSessionSchema = CreateWorkSessionSchema.extend({
+  id: z.string(),
+}).omit({ accountId: true });
+
+export const updateWorkSession = async (rawData: FormData) => {
+  const data = UpdateWorkSessionSchema.parse({
+    id: rawData.get('id'),
+    startsOn: rawData.get('startsOn'),
+    description: rawData.get('description'),
+    hours: rawData.get('hours'),
+  });
+  const workSession = await db.workSession.update({
+    data: {
+      startsOn: data.startsOn,
+      description: data.description,
+      hours: data.hours,
+    },
+    where: { id: data.id },
+  });
   revalidatePath(`/accounts/${workSession.accountId}`);
 };
