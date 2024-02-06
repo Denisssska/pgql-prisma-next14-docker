@@ -12,15 +12,21 @@ interface IWorkSessionForm {
 const WorkSessionFormRow: React.FC<IWorkSessionForm> = ({ accountId, session, onCancelClick }) => {
   const formRef = useRef<HTMLFormElement>(null);
   const handleAction = async (data: FormData) => {
-    if (session) await updateWorkSession(data);
-    else await createWorkSession(data);
+    if (session) {
+      await updateWorkSession(data);
+      onCancelClick && onCancelClick(false);
+    } else await createWorkSession(data);
     formRef.current?.reset();
   };
   return (
     <form ref={formRef} action={handleAction}>
       <div className='flex w-full border-b justify-between text-start items-center flex-1 hover:bg-slate-50 transition-all duration-200'>
         <div className='text-start p-4 w-[163px]'>
-          <Input type='date' name='startsOn' defaultValue={session?.startsOn || undefined} />
+          <Input
+            type='date'
+            name='startsOn'
+            defaultValue={session?.startsOn?.toISOString().slice(0, 10) || undefined}
+          />
           <Input type='hidden' name='id' value={session?.id} />
           <Input type='hidden' name='accountId' value={accountId} />
         </div>
