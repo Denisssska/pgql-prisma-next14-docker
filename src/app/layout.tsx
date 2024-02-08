@@ -2,12 +2,12 @@ import NewAccountCreator from '@/components/NewAccountCreator';
 import { cn } from '@/lib/utils';
 import { db } from '@/modules/db';
 import type { Metadata } from 'next';
-import { Poor_Story as FontSans } from 'next/font/google';
+import { Poor_Story } from 'next/font/google';
 import Link from 'next/link';
 import './globals.scss';
 
 // const inter = Inter({ subsets: ['latin'] });
-export const fontSans = FontSans({
+const poor = Poor_Story({
   subsets: ['latin'],
   variable: '--font-sans',
   weight: '400',
@@ -27,12 +27,12 @@ export default async function RootLayout({
     orderBy: { name: 'asc' },
     select: { id: true, name: true },
   });
-  // console.log(accounts);
+
   return (
     <html lang='en'>
       <body
         suppressHydrationWarning
-        className={cn('min-h-screen bg-background font-sans antialiased flex', fontSans.variable)}
+        className={cn('min-h-screen bg-background font-sans antialiased flex', poor.variable)}
       >
         <div className='bg-slate-800 text-slate-100 w-[240px] flex flex-col p-2 gap-2'>
           {accounts.map(account => (
